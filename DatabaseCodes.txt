@@ -1,0 +1,26 @@
+use finalProject
+
+mongoimport -d finalProject -c zipCodes zips.json
+
+db.zipCodes.find()
+
+db.items.insert({
+	
+    "itemName" : "Lamp",
+    "shortDescription" : "Lamp for use",
+    "itemDetails" : "good",
+    "contactInformation" : "deepshikhakhadgi@gmail.com",
+    "category" : "offered",
+    "state" : "MA",
+    "city" : "AGAWAM",
+    "location" : {
+        "type" : "Point",
+        "coordinates" : [ 
+            -0.127625, 
+            51.503364
+        ]
+    },
+    "imgPath" : "abc"
+
+})
+
