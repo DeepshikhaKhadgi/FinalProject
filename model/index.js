@@ -7,6 +7,7 @@ var mongo = require('mongoskin');
 var db = mongo.db(config.db, {native_parser: true});
 
 db.bind('zipCodes');
+db.bind('items');
 // To create index
 // db.locations.ensureIndex( { "$**": "text" } )
 module.exports = db;
