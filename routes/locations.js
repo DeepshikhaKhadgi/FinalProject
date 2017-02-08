@@ -59,11 +59,21 @@ router.get('/getItemsNearMe', function (req, res, next) {
 
     console.log(req.query);
 
-    var query = {'location':{
-        $near:{$geometry:{type:"Point",coordinates:[longitude,latitude]},
-    $maxDistance:2000}
-    }}
-
+    var query = {
+        'location':{
+            $near: {
+                $geometry: {
+                    type:"Point",
+                    coordinates:[
+                        parseFloat(longitude),
+                        parseFloat(latitude)
+                    ]
+                }, $maxDistance:20000
+            }
+        }
+    }
+    
+    console.log(JSON.stringify(query));
     db.items.find(query).toArray(function (err, items) {
         console.log(arguments);
         res.json(items);
