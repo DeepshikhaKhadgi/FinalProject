@@ -1,4 +1,4 @@
-use finalProject
+use finalProjectDb
 
 mongoimport -d finalProject -c zipCodes zips.json
 

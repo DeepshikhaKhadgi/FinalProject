@@ -22,14 +22,15 @@ router.get('/getStates', function (req, res, next) {
 });
 
 router.get('/getCitiesFromStates/:state', function (req, res, next) {
-    
+
     let stateVal = req.params.state;
     console.log(stateVal);
     db.zipCodes.aggregate([
-        {'$group':{'_id':{city:'$city'}}},
-        {'$sort':{'_id.city':1}},
-        {'$project':{city:'$_id.city','_id':0}}
-    ],function (err, items) {
+        { $match: { state: stateVal } },
+        { '$group': { '_id': { city: '$city' } } },
+        { '$sort': { '_id.city': 1 } },
+        { '$project': { city: '$_id.city', '_id': 0 } }
+    ], function (err, items) {
 
         res.json(items);
     })
@@ -45,10 +46,11 @@ router.get('/getCitiesFromState/:zipCode', function (req, res, next) {
     })
 });
 
-router.get('/getItemsFromCities/:city', function (req, res, next) {
+router.get('/getItemsFromCities/:state/:city', function (req, res, next) {
+    var state = req.params.state;
     var city = req.params.city;
     console.log(city);
-    db.items.find({ 'city': city }).toArray(function (err, items) {
+    db.items.find({ $and: [{ 'city': city }, { 'state': state }] }).toArray(function (err, items) {
         res.json(items);
     })
 })
