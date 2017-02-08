@@ -11,6 +11,31 @@ router.get('/getZipCodes', function (req, res, next) {
     })
 });
 
+router.get('/getStates', function (req, res, next) {
+    db.zipCodes.aggregate([
+        { '$group': { '_id': { state: '$state' } } },
+        { '$sort': { '_id.state': 1 } },
+        { '$project': { state: '$_id.state', '_id': 0 } }
+    ], function (err, items) {
+        res.json(items);
+    })
+});
+
+router.get('/getCitiesFromStates/:state', function (req, res, next) {
+    
+    let stateVal = req.params.state;
+    console.log(stateVal);
+    db.zipCodes.aggregate([
+        {'$group':{'_id':{city:'$city'}}},
+        {'$sort':{'_id.city':1}},
+        {'$project':{city:'$_id.city','_id':0}}
+    ],function (err, items) {
+
+        res.json(items);
+    })
+});
+
+
 router.get('/getCitiesFromState/:zipCode', function (req, res, next) {
 
     var zipCode = req.params.zipCode;
@@ -60,19 +85,19 @@ router.get('/getItemsNearMe', function (req, res, next) {
     console.log(req.query);
 
     var query = {
-        'location':{
+        'location': {
             $near: {
                 $geometry: {
-                    type:"Point",
-                    coordinates:[
+                    type: "Point",
+                    coordinates: [
                         parseFloat(longitude),
                         parseFloat(latitude)
                     ]
-                }, $maxDistance:20000
+                }, $maxDistance: 20000
             }
         }
     }
-    
+
     console.log(JSON.stringify(query));
     db.items.find(query).toArray(function (err, items) {
         console.log(arguments);
@@ -81,3 +106,4 @@ router.get('/getItemsNearMe', function (req, res, next) {
 })
 
 module.exports = router;
+
