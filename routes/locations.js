@@ -77,7 +77,7 @@ router.post('/saveItems', function (req, res, next) {
         city: req.body.city,
         "location": {
             "type": "Point",
-            "coordinates":  [-91.96662, 41.02267]//[parseFloat(req.body.location.coordinates[0]), parseFloat(req.body.location.coordinates[0])]
+            "coordinates":  [parseFloat(req.body.location.coordinates[0]), parseFloat(req.body.location.coordinates[0])]//[-91.96662, 41.02267]//
         },
         imgPath: "abc"
     }
