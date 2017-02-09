@@ -26,7 +26,7 @@ router.get('/getCitiesFromStates/:state', function (req, res, next) {
     let stateVal = req.params.state;
     console.log(stateVal);
     db.zipCodes.aggregate([
-        { $match: { state: stateVal } },
+        { '$match': { state: stateVal } },
         { '$group': { '_id': { city: '$city' } } },
         { '$sort': { '_id.city': 1 } },
         { '$project': { city: '$_id.city', '_id': 0 } }
@@ -56,6 +56,17 @@ router.get('/getItemsFromCities/:state/:city', function (req, res, next) {
 })
 
 router.post('/saveItems', function (req, res, next) {
+
+    // if (!req.body.location) {
+    //     req.body.location = {
+           
+    //         coordinates: [-91.96662, 41.02267]
+    //     }
+    // }
+
+  //  req.body.imgPath = "abc";
+    console.log(req.body);
+
     var itemsData = {
         itemName: req.body.itemName,
         shortDescription: req.body.shortDescription,
@@ -65,18 +76,22 @@ router.post('/saveItems', function (req, res, next) {
         state: req.body.state,
         city: req.body.city,
         "location": {
-            "type": req.body.location.type,
-            "coordinates": [req.body.location.coordinates[0], req.body.location.coordinates[0]]
+            "type": "Point",
+            "coordinates":  [-91.96662, 41.02267]//[parseFloat(req.body.location.coordinates[0]), parseFloat(req.body.location.coordinates[0])]
         },
-        imgPath: req.body.imgPath
+        imgPath: "abc"
     }
+
+    router.get('/search', function (req, res, next) {
+
+    })
 
     db.items.insert(itemsData, function (err, docInserted) {
         if (err) throw err;
         console.dir(`Success: $(JSON.stringify(docInserted))`);
 
         res.send('done');
-        return db.close();
+
     })
 })
 
@@ -102,6 +117,34 @@ router.get('/getItemsNearMe', function (req, res, next) {
 
     console.log(JSON.stringify(query));
     db.items.find(query).toArray(function (err, items) {
+        console.log(arguments);
+        res.json(items);
+    })
+})
+
+router.get('/searchItems', function (req, res, next) {
+    var itemName = req.query.itemName;
+    var city = req.query.city;
+    var category = req.query.category;
+
+
+    console.log(req.query);
+
+
+    db.items.find(
+
+        {
+            $and:
+            [
+                { "itemName": { '$regex': itemName } },
+                { "city": { '$regex': city } },
+                { "category": { '$regex': category } }
+
+            ]
+        }
+
+    ).toArray(function (err, items) {
+        if (err) throw err;
         console.log(arguments);
         res.json(items);
     })
